@@ -1,0 +1,37 @@
+#!/usr/bin/env perl
+
+$index_fs = '/n/sw/openlava/index_fs';
+
+$newwd = "";
+
+if ($ENV{PWD} ne $ENV{LS_SUBCWD}) {
+  open(FSLIST, $index_fs)
+    or die "Can't open $index_fs for reading: $!";
+  while (<FSLIST>) {
+    chomp;
+    ($h, $e, $m) = split;
+    if ($ENV{LS_SUBCWD} =~ m/^${m}(.*)$/) {
+      $newwd = $e . $1;
+    }
+  } 
+  close(FSLIST);
+
+  if ($newwd eq '') {
+    print "Cannot map $ENV{LS_SUBCWD} to a local directory.\n";
+    exit(1);
+  }
+
+  print "iostarter output: Mapping $ENV{LS_SUBCWD} to $newwd...\n\n";
+  chdir $newwd
+    or die "Can't chdir to $newwd: $!";
+}
+
+@newargs = ();
+foreach $arg (@ARGV) {
+  next if $arg eq $0;
+  $arg = "'$arg'" if $arg =~ m/[\s]/;
+  push(@newargs, $arg);
+}
+
+exec @newargs
+  or die "Can't exec job: $!";

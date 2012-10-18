@@ -1,0 +1,7 @@
+#!/bin/sh
+
+. /opt/openlava-2.0/etc/openlava-client.sh
+
+cmddir=`dirname $0`
+
+exec $cmddir/iobsub.pl "$@"

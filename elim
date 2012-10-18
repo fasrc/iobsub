@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+
+$sleep_interval = 30;
+$bio_cmd = 'sar -b 15 1';
+$rpc_cmd = 'sar -n NFSD 15 1';
+
+$bio = '0.00';
+$rpc = '0.00';
+
+while (1) {
+    foreach (`$bio_cmd 2>/dev/null`) {
+        next if not m/^\d\d:\d\d:\d\d \w\w\s+(\d+\.\d\d)/;
+        $bio = $1;
+    }
+    foreach (`$rpc_cmd 2>/dev/null`) {
+        next if not m/^\d\d:\d\d:\d\d \w\w\s+(\d+\.\d\d)/;
+        $rpc = $1;
+    }
+    print "2 bio $bio rpc $rpc\n";
+    sleep($sleep_interval);
+}
+
+exit(0);
+
